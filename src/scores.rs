@@ -7,18 +7,18 @@ use std::fmt;
 pub struct Score {
     score_type:  dice_result::ResultType,
     score: i32,
-    closed: bool
+    striked: bool
 }
 
 impl Score {
     pub fn scored(&self) -> bool {
-        self.closed || self.score != 0 
+        self.striked || self.score != 0 
     }
 }
 
 impl Display for Score {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        if self.closed {
+        if self.striked {
             write!(f, "x\t{}", self.score_type)
         } else {
             write!(f, "{}p\t{}", self.score, self.score_type)
@@ -34,23 +34,27 @@ impl ScoreCard {
     pub fn new() -> ScoreCard {
         ScoreCard {
             scores: [
-                Score { score_type: dice_result::ResultType::Ones, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Twos, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Threes, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Fours, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Fives, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Sixes, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Pair, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::TwoPairs, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::ThreeOfAKind, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::FourOfAKind, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::SmallStraight, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::LargeStraight, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::FullHouse, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Chance, score: 0, closed: false },
-                Score { score_type: dice_result::ResultType::Yatsy, score: 0, closed: false },
+                Score { score_type: dice_result::ResultType::Ones, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Twos, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Threes, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Fours, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Fives, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Sixes, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Pair, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::TwoPairs, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::ThreeOfAKind, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::FourOfAKind, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::SmallStraight, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::LargeStraight, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::FullHouse, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Chance, score: 0, striked: false },
+                Score { score_type: dice_result::ResultType::Yatsy, score: 0, striked: false },
             ]
         }
+    }
+
+    pub fn is_complete(&self) -> bool {
+        self.scores.iter().all(|s| s.scored())
     }
 
     pub fn get_available_types(&self) -> Vec<dice_result::ResultType> {
@@ -64,7 +68,12 @@ impl ScoreCard {
         }
 
         let score_index = self.scores.iter().position(|s| s.score_type == result.result_type).unwrap();
-        self.scores[score_index] = Score { score_type: result.result_type, score: result.score, closed: false };
+        self.scores[score_index] = Score { score_type: result.result_type, score: result.score, striked: false };
+    }
+
+    pub fn strike(&mut self, result_type: dice_result::ResultType) {
+        let score_index = self.scores.iter().position(|s| s.score_type == result_type).unwrap();
+        self.scores[score_index].striked = true;
     }
 
     pub fn print_scores(&self) {
@@ -76,6 +85,6 @@ impl ScoreCard {
     }
 
     fn get_scores(&self) -> Vec<Score> {
-        self.scores.iter().filter(|s| s.score > 0 || s.closed).cloned().collect()
+        self.scores.iter().filter(|s| s.score > 0 || s.striked).cloned().collect()
     }
 }

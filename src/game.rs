@@ -40,8 +40,16 @@ impl Game {
     }
 
     fn start_round(&mut self) {
+        self.check_end();
         self.reset_round();
         self.get_command();
+    }
+
+    fn check_end(&self) {
+        if self.score_card.is_complete() {
+            println!("\n--- Game over! Thanks for playing! ---");
+            exit(0);
+        }
     }
 
     fn reset_round(&mut self) {
@@ -75,11 +83,14 @@ impl Game {
     }
 
     fn handle_pick(&mut self) {
-        println!("Pick a result:");
-
         let available_types = self.score_card.get_available_types();
         let results = dice_result::get_results( self.dice.clone() );
         let available_results = results.iter().filter(|&&r| available_types.contains(&r.result_type)).collect::<Vec<_>>();
+        if available_results.len() == 0 {
+            self.handle_strike();
+        }
+        
+        println!("Pick a result:");
         for i in 0..available_results.len() {
             println!("{}: {}", i, available_results[i]);
         }
@@ -90,8 +101,26 @@ impl Game {
             self.handle_pick();
         }
 
-        let result = available_results[pick].clone();
-        self.score_card.add_result(result);
+        self.score_card.add_result(available_results[pick].clone());
+
+        self.score_card.print_scores();
+        self.start_round();
+    }
+
+    fn handle_strike(&mut self) {
+        println!("Strike a result:");
+        let available_types = self.score_card.get_available_types();
+        for i in 0..available_types.len() {
+            println!("{}: {}", i, available_types[i]);
+        }
+
+        let index = input::get_pick();
+        if index >= available_types.len() {
+            println!("Invalid selection. Try again.");
+            self.handle_strike();
+        }
+
+        self.score_card.strike(available_types[index]);
 
         self.score_card.print_scores();
         self.start_round();
