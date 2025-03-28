@@ -142,15 +142,20 @@ impl Game {
     fn handle_reroll(&mut self, indices: Vec<usize>) {
         match self.get_reroll(indices) {
             Ok(indices) => {
-                let new_dice = self.dice.reroll(indices);
                 self.rerolls = self.rerolls - 1;
-                self.dice = new_dice;
+                self.dice = self.dice.reroll(indices);
             },
             Err(e) => {
                 println!("{}", e);
             }
         }
-        self.get_command();
+        
+        if self.rerolls > 0 {
+            self.get_command();
+        } else {
+            self.print_state();
+            self.handle_pick();
+        }
     }
 
     fn get_reroll(&self, indices: Vec<usize>) -> Result<Vec<usize>, String> {
