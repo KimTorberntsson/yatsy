@@ -32,6 +32,7 @@ pub fn get_command() -> Command {
             "p" | "pick" => return Command::Pick,
             "q" | "quit" => return Command::Quit,
             "h" | "help" => return Command::Help,
+            "s" | "scores" => return Command::ShowScores,
             "reset" => return Command::Reset,
             _ => ()
         }

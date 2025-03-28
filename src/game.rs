@@ -101,11 +101,17 @@ impl Game {
         for i in 0..available_results.len() {
             println!("{}: {}", i, available_results[i]);
         }
+        println!("{}: Strike row", available_results.len());
 
         let pick = input::get_pick();
-        if pick >= available_results.len() {
+        if pick > available_results.len() {
             println!("Invalid selection. Try again.");
             self.handle_pick();
+        }
+        
+        if pick == available_results.len() {
+            self.handle_strike();
+            return;
         }
 
         self.score_card.add_result(available_results[pick].clone());
