@@ -26,13 +26,16 @@ impl Game {
     }
 
     pub fn print_welcome(&self) {
-        println!("\nWelcome to Yatsy!");
+        println!("\n--- Welcome to Command Line Yatsy!---");
         self.print_help();
     }
 
     fn print_help(&self) {
-        println!("Enter \"r\" followed by indices to reroll dice, \"p\" to pick a result.");
-        println!("Or use \"q\" to quit, \"h\" for help, or \"reset\" to start a new game.");
+        println!("Enter \"r\" followed by indices to reroll dice. Indices are 0 based and separated by spaces.");
+        println!("Enter \"p\" to pick a result from the available options.");
+        println!("Enter \"s\" to show the current score card.");
+        println!("Enter \"q\" to quit or \"reset\" to start a new game.");
+        println!("Enter \"h\" to show this help message.")
     }
 
     fn print_state(&self) {
@@ -75,9 +78,13 @@ impl Game {
             input::Command::Pick => self.handle_pick(),
             input::Command::Quit => exit(0),
             input::Command::Reset => self.reset_game(),
+            input::Command::ShowScores => {
+                self.score_card.print_scores(false);
+                self.get_command();
+            }
             input::Command::Help => {
                 self.print_help();
-                self.start_round();
+                self.get_command();
             },
         }
     }
@@ -103,7 +110,7 @@ impl Game {
 
         self.score_card.add_result(available_results[pick].clone());
 
-        self.score_card.print_scores();
+        self.score_card.print_scores(true);
         self.start_round();
     }
 
@@ -122,7 +129,7 @@ impl Game {
 
         self.score_card.strike(available_types[index]);
 
-        self.score_card.print_scores();
+        self.score_card.print_scores(true);
         self.start_round();
     }
 

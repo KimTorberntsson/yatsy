@@ -76,15 +76,73 @@ impl ScoreCard {
         self.scores[score_index].striked = true;
     }
 
-    pub fn print_scores(&self) {
+    pub fn print_scores(&self, only_print_scored: bool) {
         println!("\n--- Score Card ---");
-        for score in self.get_scores() {
-            println!("{}", score);
+
+        let mut upper_scores = self.get_upper_scores();
+        let mut lower_scores = self.get_lower_scores();
+        if only_print_scored {
+            upper_scores = self.get_scored(upper_scores);
+            lower_scores = self.get_scored(lower_scores);
         }
-        println!("---\nTotal:\t\t{}p", self.get_scores().into_iter().map(|f| f.score).sum::<i32>())
+
+        self.print_upper_scores(&upper_scores);
+        self.print_lower_scores(&lower_scores);
+
+        let total = upper_scores.into_iter().map(|f| f.score).sum::<i32>() + 
+                       lower_scores.into_iter().map(|f| f.score).sum::<i32>() + 
+                       self.get_bonus();
+        println!("Total:\t{}p", total);
+    }
+ 
+    fn print_upper_scores(&self, scores: &Vec<Score>) {
+        if scores.len() == 0 {
+            return
+        }
+        
+        let mut sum = 0;
+        for score in scores {
+            println!("{}", score);
+            sum += score.score;
+        }
+        println!("---\nSum: {}p", sum);
+
+        if scores.into_iter().all(|s| s.scored() && scores.into_iter().count() == 6) {
+            println!("Bonus: {}p", self.get_bonus());
+        }
+        println!("---");
     }
 
-    fn get_scores(&self) -> Vec<Score> {
-        self.scores.iter().filter(|s| s.score > 0 || s.striked).cloned().collect()
+    fn print_lower_scores(&self, scores: &Vec<Score>) {
+        if scores.len() == 0 {
+            return
+        }
+        
+        for score in scores {
+            println!("{}", score);
+        }
+
+        println!("---");
+    }
+
+    fn get_upper_scores(&self) -> Vec<Score> {
+        self.scores.iter().take(6).cloned().collect()
+    }
+
+    fn get_lower_scores(&self) -> Vec<Score> {
+        self.scores.iter().skip(6).cloned().collect()
+    }
+
+    fn get_scored(&self, scores: Vec<Score>) -> Vec<Score> {
+        scores.iter().filter(|s| s.score > 0 || s.striked).cloned().collect()
+    }
+
+    fn get_bonus(&self) -> i32 {
+        let upper_sum = self.scores.iter().take(6).map(|s| s.score).sum::<i32>();
+        if upper_sum >= 63 {
+            50
+        } else {
+            0
+        }
     }
 }

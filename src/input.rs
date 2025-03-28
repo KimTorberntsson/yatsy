@@ -7,7 +7,8 @@ pub enum Command {
     Pick,
     Quit,
     Help,
-    Reset
+    Reset,
+    ShowScores
 }
 
 pub fn get_command() -> Command {
