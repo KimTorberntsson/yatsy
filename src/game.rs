@@ -31,7 +31,7 @@ impl Game {
     }
 
     fn print_help(&self) {
-        println!("Enter \"r\" followed by indices to reroll dice. Indices are 0 based and separated by spaces.");
+        println!("Enter \"r\" followed by indices to reroll dice. Indices are 1 based and separated by spaces.");
         println!("Enter \"p\" to pick a result from the available options.");
         println!("Enter \"s\" to show the current score card.");
         println!("Enter \"q\" to quit or \"reset\" to start a new game.");
@@ -99,16 +99,16 @@ impl Game {
         
         println!("Pick a result:");
         for i in 0..available_results.len() {
-            println!("{}: {}", i, available_results[i]);
+            println!("{}: {}", i + 1, available_results[i]);
         }
-        println!("{}: Strike row", available_results.len());
+        println!("{}: Strike row", available_results.len() + 1);
 
         let pick = input::get_pick();
         if pick > available_results.len() {
             println!("Invalid selection. Try again.");
             self.handle_pick();
         }
-        
+
         if pick == available_results.len() {
             self.handle_strike();
             return;
@@ -142,7 +142,6 @@ impl Game {
     fn handle_reroll(&mut self, indices: Vec<usize>) {
         match self.get_reroll(indices) {
             Ok(indices) => {
-                println!("Rerolling at: {:?}", indices);
                 let new_dice = self.dice.reroll(indices);
                 self.rerolls = self.rerolls - 1;
                 self.dice = new_dice;

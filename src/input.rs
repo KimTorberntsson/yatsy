@@ -22,7 +22,8 @@ pub fn get_command() -> Command {
             let numbers = indices.split_whitespace()
             .map(|s| s.parse::<usize>())
             .filter_map(Result::ok)
-            .filter(|&n| (0..5).contains(&n))
+            .filter(|&n| (1..6).contains(&n))
+            .map(|n| n - 1)
             .unique()
             .collect();
             return Command::Reroll(numbers);
@@ -45,7 +46,7 @@ pub fn get_pick() -> usize {
     loop {
         let input = get_input("");
         match input.parse::<usize>() {
-            Ok(n) => return n,
+            Ok(n) => return n - 1,
             Err(_) => println!("Invalid input. Try again."),
         }
     }
