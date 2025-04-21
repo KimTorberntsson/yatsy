@@ -76,15 +76,11 @@ impl ScoreCard {
         self.scores[score_index].striked = true;
     }
 
-    pub fn print_scores(&self, only_print_scored: bool) {
+    pub fn print_scores(&self) {
         println!("\n--- Score Card ---");
 
-        let mut upper_scores = self.get_upper_scores();
-        let mut lower_scores = self.get_lower_scores();
-        if only_print_scored {
-            upper_scores = self.get_scored(upper_scores);
-            lower_scores = self.get_scored(lower_scores);
-        }
+        let upper_scores = self.get_upper_scores();
+        let lower_scores = self.get_lower_scores();
 
         self.print_upper_scores(&upper_scores);
         self.print_lower_scores(&lower_scores);
@@ -131,10 +127,6 @@ impl ScoreCard {
 
     fn get_lower_scores(&self) -> Vec<Score> {
         self.scores.iter().skip(6).cloned().collect()
-    }
-
-    fn get_scored(&self, scores: Vec<Score>) -> Vec<Score> {
-        scores.iter().filter(|s| s.score > 0 || s.striked).cloned().collect()
     }
 
     fn get_bonus(&self) -> i32 {

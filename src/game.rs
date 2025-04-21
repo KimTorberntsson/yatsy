@@ -79,7 +79,7 @@ impl Game {
             input::Command::Quit => exit(0),
             input::Command::Reset => self.reset_game(),
             input::Command::ShowScores => {
-                self.score_card.print_scores(false);
+                self.score_card.print_scores();
                 self.get_command();
             }
             input::Command::Help => {
@@ -116,7 +116,7 @@ impl Game {
 
         self.score_card.add_result(available_results[pick].clone());
 
-        self.score_card.print_scores(true);
+        self.score_card.print_scores();
         self.start_round();
     }
 
@@ -135,7 +135,7 @@ impl Game {
 
         self.score_card.strike(available_types[index]);
 
-        self.score_card.print_scores(true);
+        self.score_card.print_scores();
         self.start_round();
     }
 
