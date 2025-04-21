@@ -124,7 +124,7 @@ impl Game {
         println!("Strike a result:");
         let available_types = self.score_card.get_available_types();
         for i in 0..available_types.len() {
-            println!("{}: {}", i, available_types[i]);
+            println!("{}: {}", i + 1, available_types[i]);
         }
 
         let index = input::get_pick();
